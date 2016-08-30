@@ -1,0 +1,17 @@
+<jmix = 'http://www.jahia.org/jahia/mix/1.0'>
+<jnt = 'http://www.jahia.org/jahia/nt/1.0'>
+
+[jnt:xmlActivityFileConnector] > jnt:content, jmix:studioOnly, jmix:structuredContent
+ - xmlFilePath (string)
+
+[jnt:xmlActivities] > jnt:content, jmix:structuredContent
+
+[jnt:xmlActivity] > jnt:content, jmix:structuredContent
+ - id (string)
+ - name (string)
+ - distance (string)
+ - type (string)
+ - moving_time (string)
+ - start_date (string)
+ - filename (string)
+

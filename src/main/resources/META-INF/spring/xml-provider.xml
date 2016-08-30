@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:osgi="http://www.eclipse.org/gemini/blueprint/schema/blueprint"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                           http://www.eclipse.org/gemini/blueprint/schema/blueprint
+                           http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd
+                           http://www.springframework.org/schema/util
+                           http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+    <osgi:reference id="ExternalProviderInitializerService" interface="org.jahia.modules.external.ExternalProviderInitializerService"/>
+
+    <!-- Xml Writable -->
+
+    <bean id="XMLWritableProvider" class="org.jahia.modules.external.ExternalContentStoreProvider" parent="AbstractJCRStoreProvider" >
+        <property name="key" value="XmlWritableProvider"/>
+        <property name="mountPoint" value="/mounts/xml-activities"/>
+        <property name="externalProviderInitializerService" ref="ExternalProviderInitializerService"/>
+        <property name="extendableTypes">
+            <list>
+                <value>jnt:contentFolder</value>
+                <value>jnt:xmlActivity</value>
+            </list>
+        </property>
+        <property name="dataSource" ref="XmlDataSourceWritable"/>
+    </bean>
+
+    <bean name="XmlDataSourceWritable" class="org.jahia.modules.xmlprovider.XmlDataSourceWritable" init-method="start">
+        <property name="cacheProvider" ref="ehCacheProvider"/>
+    </bean>
+
+</beans>
