@@ -1,37 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <content xmlns:j="http://www.jahia.org/jahia/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0">
     <modules jcr:primaryType="jnt:modules">
-        <xml-provider j:dependencies="assets default external-provider"
-                    j:modulePriority="0"
-                    j:moduleType="module"
-                    j:title="xml provider"
-                    jcr:mixinTypes="jmix:hasExternalProviderExtension"
-                    jcr:primaryType="jnt:module">
+        <xml-externalprovider j:dependencies="assets default external-provider"
+                                  j:modulePriority="0"
+                                  j:moduleType="module"
+                                  j:title="XML External Data Provider"
+                                  jcr:primaryType="jnt:module">
                 
                 <portlets jcr:primaryType="jnt:portletFolder"/>
                 <files jcr:primaryType="jnt:folder"/>
                 <contents jcr:primaryType="jnt:contentFolder"/>
                 <templates j:rootTemplatePath="/base" jcr:primaryType="jnt:templatesFolder">
-                    <files jcr:primaryType="jnt:folder"/>
+                    <files jcr:primaryType="jnt:folder">
+                        <xml_logo.png j:height="16"
+                             j:width="14"
+                             jcr:mixinTypes="jmix:image"
+                             jcr:primaryType="jnt:file">
+                            <jcr:content jcr:mimeType="image/png" jcr:primaryType="jnt:resource"/>
+                            <thumbnail jcr:mimeType="image/png" jcr:primaryType="jnt:resource"/>
+                            <thumbnail2 jcr:mimeType="image/png" jcr:primaryType="jnt:resource"/>
+                        </xml_logo.png>
+                    </files>
                     <contents jcr:primaryType="jnt:contentFolder"/>
                     <site-settings-base j:hiddenTemplate="false"
                                 j:view="siteSettings"
                                 jcr:primaryType="jnt:pageTemplate">
+                        <j:translation_en jcr:language="en"
+                                 jcr:mixinTypes="mix:title"
+                                 jcr:primaryType="jnt:translation"
+                                 jcr:title="site-settings-base"/>
                         <xml-file-connector j:applyOn="jnt:virtualsite"
                                    j:defaultTemplate="false"
                                    j:hiddenTemplate="false"
+                                   j:icon="/modules/xml-external-data-provider/templates/files/xml_logo.png"
                                    jcr:primaryType="jnt:contentTemplate">
                             <j:translation_en jcr:language="en"
                                     jcr:mixinTypes="mix:title"
                                     jcr:primaryType="jnt:translation"
                                     jcr:title="Xml File Connector"/>
                             <pagecontent jcr:primaryType="jnt:contentList">
-                                <xmlactivityfileconnector jcr:primaryType="jnt:xmlActivityFileConnector"/>
+                                <activityfileconnector jcr:primaryType="jnt:activityFileConnectorXML"/>
                             </pagecontent>
                         </xml-file-connector>
                     </site-settings-base>
                 </templates>
                 
-            </xml-provider>
+            </xml-externalprovider>
     </modules>
 </content>

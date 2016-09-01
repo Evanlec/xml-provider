@@ -45,7 +45,7 @@
 </template:addResources>
 
 <div class="clearfix">
-    <h1 class="pull-left"><fmt:message key="jnt_xmlActivityfileConnector"/></h1>
+    <h1 class="pull-left"><fmt:message key="jnt_activityfileConnector"/></h1>
     <div class="pull-right">
         <img alt="" src="<c:url value="${url.currentModule}/img/xml_logo.png"/>"
              width="75" height="75">
@@ -62,7 +62,7 @@
                         </legend>
                         <div class="control-group">
                             <label class="control-label">
-                                <fmt:message key="jnt_xmlActivityfileConnector.xmlFilePath"/>
+                                <fmt:message key="jnt_activityfileConnector.xmlFilePath"/>
                             </label>
                             <div class="controls">
                                 <input id="xmlFilePath" name="xmlFilePath" style="width:150px" type="text"
@@ -88,10 +88,10 @@
             </div>
             <div class="span6" style="text-align:justify">
                 <div class="alert alert-info">
-                    <h4><fmt:message key="jnt_xmlActivityfileConnector.title"/></h4>
+                    <h4><fmt:message key="jnt_activityfileConnector.title"/></h4>
                     <p>
-                        <fmt:message key="jnt_xmlActivityfileConnector.description"/><br/>
-                        <fmt:message key="jnt_xmlActivityfileConnector.version"/><br/>
+                        <fmt:message key="jnt_activityfileConnector.description"/><br/>
+                        <fmt:message key="jnt_activityfileConnector.version"/><br/>
                     </p>
                 </div>
                 <c:if test="${not empty xmlFilePath}">
