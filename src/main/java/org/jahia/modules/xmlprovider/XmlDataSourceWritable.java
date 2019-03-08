@@ -2,7 +2,6 @@ package org.jahia.modules.xmlprovider;
 
 import com.google.common.collect.Sets;
 import net.sf.ehcache.Ehcache;
-
 import org.apache.commons.lang.StringUtils;
 import org.jahia.modules.external.ExternalData;
 import org.jahia.modules.external.ExternalDataSource;
@@ -14,6 +13,13 @@ import org.jahia.services.content.nodetypes.NodeTypeRegistry;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import to.XmlActivityTO;
 
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.PathNotFoundException;
@@ -26,14 +32,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.util.*;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import to.XmlActivityTO;
 
 /**
  * Created by Quentin on 12/09/15.
@@ -241,9 +239,9 @@ public class XmlDataSourceWritable implements ExternalDataSource, ExternalDataSo
                 properties.put(ID,          new String[]{ activity.getString(ID)   });
                 properties.put(NAME,        new String[]{ activity.getString(NAME) });
                 properties.put(TYPE,        new String[]{ activity.getString(TYPE) });
-                properties.put(DISTANCE,    new String[]{ XmlUtils.displayDistance(activity.getString(DISTANCE))      });
-                properties.put(MOVING_TIME, new String[]{ XmlUtils.displayMovingTime(activity.getString(MOVING_TIME)) });
-                properties.put(START_DATE,  new String[]{ XmlUtils.displayStartDate(activity.getString(START_DATE))   });
+                properties.put(DISTANCE,    new String[]{ activity.getString(DISTANCE)      });
+                properties.put(MOVING_TIME, new String[]{ activity.getString(MOVING_TIME) });
+                properties.put(START_DATE,  new String[]{ activity.getString(START_DATE)   });
                 // Return the external data (a node)
                 ExternalData data = new ExternalData(identifier, "/" + identifier, JNT_XML_ACTIVITY, properties);
                 return data;
