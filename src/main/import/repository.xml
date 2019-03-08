@@ -39,7 +39,7 @@
                                     jcr:primaryType="jnt:translation"
                                     jcr:title="Xml File Connector"/>
                             <pagecontent jcr:primaryType="jnt:contentList">
-                                <activityfileconnector jcr:primaryType="jnt:activityFileConnectorXML"/>
+                                <activityfileconnector jcr:primaryType="jnt:xmlActivityFileConnector"/>
                             </pagecontent>
                         </xml-file-connector>
                     </site-settings-base>

@@ -1,12 +1,12 @@
 <jmix = 'http://www.jahia.org/jahia/mix/1.0'>
 <jnt = 'http://www.jahia.org/jahia/nt/1.0'>
 
-[jnt:activityFileConnectorXML] > jnt:content, jmix:studioOnly, jmix:structuredContent
+[jnt:xmlActivityFileConnector] > jnt:content, jmix:studioOnly, jmix:structuredContent
  - xmlFilePath (string)
 
-[jnt:activitiesXML] > jnt:content, jmix:structuredContent
+[jnt:xmlActivities] > jnt:content, jmix:structuredContent
 
-[jnt:activityXML] > jnt:content, jmix:structuredContent
+[jnt:xmlActivity] > jnt:content, jmix:structuredContent
  - id (string)
  - name (string)
  - distance (string)
