@@ -1,8 +1,12 @@
 <jmix = 'http://www.jahia.org/jahia/mix/1.0'>
 <jnt = 'http://www.jahia.org/jahia/nt/1.0'>
 
-[jnt:xmlActivityFileConnector] > jnt:content, jmix:studioOnly, jmix:structuredContent
- - xmlFilePath (string)
+[jnt:xmlMountPoint] > jnt:mountPoint
+ - j:xmlPath (string) nofulltext
+
+[jnt:xmlMountPointFactoryPage] > jnt:content, jmix:siteComponent, mix:title, jmix:studioOnly, jmix:mountPointFactory
+
+[jnt:xmlMountPointFactoryForm] > jnt:content, jmix:siteComponent, mix:title, jmix:studioOnly
 
 [jnt:xmlActivities] > jnt:content, jmix:structuredContent
 

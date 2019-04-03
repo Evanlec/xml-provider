@@ -47,7 +47,6 @@ public class XmlDataSourceWritable implements ExternalDataSource, ExternalDataSo
     // Cache
     private EhCacheProvider ehCacheProvider;
     private Ehcache cache;
-    private static final String CACHE_NAME           = "xml-cache";
     private static final String CACHE_XML_ACTVITIES  = "cacheXmlActivities";
 
 
@@ -82,6 +81,18 @@ public class XmlDataSourceWritable implements ExternalDataSource, ExternalDataSo
         this.ehCacheProvider = ehCacheProvider;
     }
 
+    public EhCacheProvider getEhCacheProvider() {
+        return ehCacheProvider;
+    }
+
+    public Ehcache getCache() {
+        return cache;
+    }
+
+    public void setCache(Ehcache cache) {
+        this.cache = cache;
+    }
+
     public String getXmlFilePath() {
         return XML_FILE_PATH;
     }
@@ -93,14 +104,6 @@ public class XmlDataSourceWritable implements ExternalDataSource, ExternalDataSo
     // METHODS
     public void start() {
         // Init method defined in the bean : XmlDataSourceWritable
-        try {
-            if (!ehCacheProvider.getCacheManager().cacheExists(CACHE_NAME)) {
-                ehCacheProvider.getCacheManager().addCache(CACHE_NAME);
-            }
-            cache = ehCacheProvider.getCacheManager().getCache(CACHE_NAME);
-        } catch (Exception e) {
-            LOGGER.error("Error with the cache : " + e.getMessage());
-        }
     }
 
     /**

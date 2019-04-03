@@ -13,7 +13,7 @@
 
     <!-- Xml Writable -->
 
-    <bean id="XMLWritableProvider" class="org.jahia.modules.external.ExternalContentStoreProvider" parent="AbstractJCRStoreProvider" >
+    <bean class="org.jahia.modules.external.ExternalContentStoreProvider" parent="AbstractJCRStoreProvider" scope="prototype">
         <property name="key" value="XmlWritableProvider"/>
         <property name="mountPoint" value="/mounts/xml-activities"/>
         <property name="externalProviderInitializerService" ref="ExternalProviderInitializerService"/>
@@ -23,10 +23,11 @@
                 <value>jnt:xmlActivity</value>
             </list>
         </property>
-        <property name="dataSource" ref="XmlDataSourceWritable"/>
     </bean>
 
-    <bean name="XmlDataSourceWritable" class="org.jahia.modules.xmlprovider.XmlDataSourceWritable" init-method="start">
+    <bean name="xmlProviderFactory" class="org.jahia.modules.xmlprovider.XmlProviderFactory"/>
+
+    <bean class="org.jahia.modules.xmlprovider.XmlDataSourceWritable" scope="prototype">
         <property name="cacheProvider" ref="ehCacheProvider"/>
     </bean>
 
