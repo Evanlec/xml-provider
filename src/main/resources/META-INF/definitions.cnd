@@ -11,11 +11,11 @@
 [jnt:xmlActivities] > jnt:content, jmix:structuredContent
 
 [jnt:xmlActivity] > jnt:content, jmix:structuredContent
- - id (string)
+ - id (long)
  - name (string)
- - distance (string)
+ - distance (double)
  - type (string)
- - moving_time (string)
- - start_date (string)
+ - moving_time (date)
+ - start_date (date)
  - filename (string)
 

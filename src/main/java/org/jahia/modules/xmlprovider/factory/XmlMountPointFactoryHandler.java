@@ -1,7 +1,51 @@
+/**
+ * ==========================================================================================
+ * =                   JAHIA'S DUAL LICENSING - IMPORTANT INFORMATION                       =
+ * ==========================================================================================
+ *
+ *                                 http://www.jahia.com
+ *
+ *     Copyright (C) 2002-2019 Jahia Solutions Group SA. All rights reserved.
+ *
+ *     THIS FILE IS AVAILABLE UNDER TWO DIFFERENT LICENSES:
+ *     1/GPL OR 2/JSEL
+ *
+ *     1/ GPL
+ *     ==================================================================================
+ *
+ *     IF YOU DECIDE TO CHOOSE THE GPL LICENSE, YOU MUST COMPLY WITH THE FOLLOWING TERMS:
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ *     2/ JSEL - Commercial and Supported Versions of the program
+ *     ===================================================================================
+ *
+ *     IF YOU DECIDE TO CHOOSE THE JSEL LICENSE, YOU MUST COMPLY WITH THE FOLLOWING TERMS:
+ *
+ *     Alternatively, commercial and supported versions of the program - also known as
+ *     Enterprise Distributions - must be used in accordance with the terms and conditions
+ *     contained in a separate written agreement between you and Jahia Solutions Group SA.
+ *
+ *     If you are unsure which license is appropriate for your use,
+ *     please contact the sales department at sales@jahia.com.
+ */
 package org.jahia.modules.xmlprovider.factory;
 
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.VFS;
+import org.apache.xerces.impl.dtd.XMLDTDValidator;
 import org.jahia.services.content.JCRCallback;
 import org.jahia.services.content.JCRSessionWrapper;
 import org.jahia.services.content.JCRTemplate;
@@ -16,8 +60,23 @@ import org.springframework.webflow.execution.RequestContext;
 import org.jahia.modules.external.admin.mount.AbstractMountPointFactoryHandler;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import javax.jcr.RepositoryException;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Locale;
 
@@ -28,6 +87,7 @@ public class XmlMountPointFactoryHandler extends AbstractMountPointFactoryHandle
     private static final long serialVersionUID = 41541258548484556L;
 
     private static final String BUNDLE = "resources.xml-externalprovider";
+    private static final String CONTENTS_NODENAME = "contents";
 
     private XmlMountPointFactory xmlMountPointFactory;
 
@@ -50,7 +110,7 @@ public class XmlMountPointFactoryHandler extends AbstractMountPointFactoryHandle
             JSONArray folders = JCRTemplate.getInstance().doExecuteWithSystemSession(new JCRCallback<JSONArray>() {
                 @Override
                 public JSONArray doInJCR(JCRSessionWrapper session) throws RepositoryException {
-                    return getSiteFolders(session.getWorkspace(),"contents");
+                    return getSiteFolders(session.getWorkspace(),CONTENTS_NODENAME);
                 }
             });
 
@@ -100,7 +160,17 @@ public class XmlMountPointFactoryHandler extends AbstractMountPointFactoryHandle
     private boolean validateXml(XmlMountPointFactory xmlMountPointFactory) {
         try {
             VFS.getManager().resolveFile(xmlMountPointFactory.getRoot());
-        } catch (FileSystemException e) {
+            /*DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+            builderFactory.setValidating(false);
+            builderFactory.setNamespaceAware(true);
+            DocumentBuilder builder = builderFactory.newDocumentBuilder();
+            Document xmlFile = builder.parse(new InputSource(xmlMountPointFactory.getRoot()));
+            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            Source schemaFile = new StreamSource(new File("./src/xml/XMLSchema.xsd"));
+            Schema schema = factory.newSchema(schemaFile);
+            Validator validator = schema.newValidator();
+            validator.validate(new DOMSource(xmlFile));*/
+        } catch (IOException e) {
             logger.warn("XML mount point " + xmlMountPointFactory.getName() + " has validation problem " + e.getMessage());
             return false;
         }
