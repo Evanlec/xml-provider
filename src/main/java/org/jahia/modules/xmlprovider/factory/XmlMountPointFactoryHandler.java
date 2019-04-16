@@ -130,7 +130,7 @@ public class XmlMountPointFactoryHandler extends AbstractMountPointFactoryHandle
         boolean validXmlPoint = validateXml(xmlMountPointFactory);
         if(!validXmlPoint) {
             logger.error("Error saving mount point : " + xmlMountPointFactory.getName() + "with the root : " + xmlMountPointFactory.getRoot());
-            MessageBuilder messageBuilder = new MessageBuilder().error().defaultText(Messages.get(BUNDLE,"label",locale));
+            MessageBuilder messageBuilder = new MessageBuilder().error().defaultText(Messages.get(BUNDLE,"label.error",locale));
             messageContext.addMessage(messageBuilder.build());
             requestContext.getConversationScope().put("adminURL", getAdminURL(requestContext));
             return false;
@@ -160,7 +160,7 @@ public class XmlMountPointFactoryHandler extends AbstractMountPointFactoryHandle
     private boolean validateXml(XmlMountPointFactory xmlMountPointFactory) {
         try {
             VFS.getManager().resolveFile(xmlMountPointFactory.getRoot());
-            /*DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
             builderFactory.setValidating(false);
             builderFactory.setNamespaceAware(true);
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
@@ -169,9 +169,9 @@ public class XmlMountPointFactoryHandler extends AbstractMountPointFactoryHandle
             Source schemaFile = new StreamSource(new File("./src/xml/XMLSchema.xsd"));
             Schema schema = factory.newSchema(schemaFile);
             Validator validator = schema.newValidator();
-            validator.validate(new DOMSource(xmlFile));*/
-        } catch (IOException e) {
-            logger.warn("XML mount point " + xmlMountPointFactory.getName() + " has validation problem " + e.getMessage());
+            validator.validate(new DOMSource(xmlFile));
+        } catch (IOException | ParserConfigurationException | SAXException e) {
+            logger.warn(String.format("XML mount point %s has validation problem %s", xmlMountPointFactory.getName(), e.getMessage()));
             return false;
         }
         return true;
