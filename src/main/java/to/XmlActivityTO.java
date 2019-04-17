@@ -43,18 +43,29 @@
  */
 package to;
 
+import org.apache.jackrabbit.util.ISO8601;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
+
+import javax.jcr.ValueFormatException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by Juan Carlos Rodas on 6/04/2016.
  */
 public class XmlActivityTO {
 
-    private String id;
+    private static final Logger logger   = LoggerFactory.getLogger(to.XmlActivityTO.class);
+
+    private Integer id;
 
     private String name;
 
-    private String distance;
+    private Double distance;
 
     private String type;
 
@@ -68,12 +79,12 @@ public class XmlActivityTO {
      * @param element
      */
     public XmlActivityTO(Element element){
-        try { this.id = element.getElementsByTagName("id").item(0).getTextContent(); }catch(Exception e){}
+        try { setId(element.getElementsByTagName("id").item(0).getTextContent()); }catch(Exception e){}
         try { this.name = element.getElementsByTagName("name").item(0).getTextContent(); }catch(Exception e){}
-        try { this.distance = element.getElementsByTagName("distance").item(0).getTextContent(); }catch(Exception e){}
+        try { setDistance(element.getElementsByTagName("distance").item(0).getTextContent()); }catch(Exception e){}
         try { this.type = element.getElementsByTagName("type").item(0).getTextContent(); }catch(Exception e){}
-        try { this.movingTime = element.getElementsByTagName("moving_time").item(0).getTextContent(); }catch(Exception e){}
-        try { this.startDate = element.getElementsByTagName("start_date").item(0).getTextContent(); }catch(Exception e){}
+        try { setMovingTime(element.getElementsByTagName("moving_time").item(0).getTextContent()); }catch(Exception e){}
+        try { setStartDate(element.getElementsByTagName("start_date").item(0).getTextContent()); }catch(Exception e){}
     }
 
     /**
@@ -82,7 +93,7 @@ public class XmlActivityTO {
      * @return Value for property 'id'.
      */
     public String getId() {
-        return id;
+        return id.toString();
     }
 
     /**
@@ -91,7 +102,7 @@ public class XmlActivityTO {
      * @param id Value to set for property 'id'.
      */
     public void setId(String id) {
-        this.id = id;
+        this.id = Integer.parseInt(id);
     }
 
     /**
@@ -117,7 +128,7 @@ public class XmlActivityTO {
      *
      * @return Value for property 'distance'.
      */
-    public String getDistance() {
+    public Double getDistance() {
         return distance;
     }
 
@@ -127,7 +138,7 @@ public class XmlActivityTO {
      * @param distance Value to set for property 'distance'.
      */
     public void setDistance(String distance) {
-        this.distance = distance;
+        this.distance = Double.parseDouble(distance);
     }
 
     /**
@@ -181,7 +192,16 @@ public class XmlActivityTO {
      * @param startDate Value to set for property 'startDate'.
      */
     public void setStartDate(String startDate) {
-        this.startDate = startDate;
+        SimpleDateFormat dateFormat;
+        dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date date = dateFormat.parse(startDate);
+            Calendar startDateCalendar = Calendar.getInstance();
+            startDateCalendar.setTime(date);
+            this.startDate = ISO8601.format(startDateCalendar);
+        } catch (ParseException e ) {
+            logger.warn(e.getMessage());
+        }
     }
 
     /**
@@ -194,7 +214,7 @@ public class XmlActivityTO {
                 "    \"name\": \"" + (this.name != null ? this.name : "") + "\",\n" +
                 "    \"type\": \"" + (this.type != null ? this.type : "") + "\",\n" +
                 "    \"distance\": " + (this.distance != null ? this.distance : "") + ",\n" +
-                "    \"moving_time\": " + (this.movingTime != null ? this.movingTime : "") + ",\n" +
+                "    \"moving_time\": \"" + (this.movingTime != null ? this.movingTime : "") + "\",\n" +
                 "    \"start_date\": \"" + (this.startDate != null ? this.startDate: "") + "\"\n" +
                 "  }";
     }

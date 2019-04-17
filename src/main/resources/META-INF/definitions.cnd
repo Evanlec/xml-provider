@@ -15,7 +15,7 @@
  - name (string)
  - distance (double)
  - type (string)
- - moving_time (date)
+ - moving_time (string) < '(?:[01]\\d|2[0123]):(?:[012345]\\d):(?:[012345]\\d)'
  - start_date (date)
  - filename (string)
 
