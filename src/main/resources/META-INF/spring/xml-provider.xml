@@ -31,4 +31,6 @@
         <property name="cacheProvider" ref="ehCacheProvider"/>
     </bean>
 
+    <bean id="xmlMountPointFactory" class="org.jahia.modules.xmlprovider.factory.XmlMountPointFactory"/>
+
 </beans>

@@ -43,9 +43,9 @@
  */
 package org.jahia.modules.xmlprovider.factory;
 
-import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.VFS;
-import org.apache.xerces.impl.dtd.XMLDTDValidator;
+import org.jahia.registries.ServicesRegistry;
 import org.jahia.services.content.JCRCallback;
 import org.jahia.services.content.JCRSessionWrapper;
 import org.jahia.services.content.JCRTemplate;
@@ -75,8 +75,8 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Locale;
 
@@ -88,7 +88,6 @@ public class XmlMountPointFactoryHandler extends AbstractMountPointFactoryHandle
 
     private static final String BUNDLE = "resources.xml-externalprovider";
     private static final String CONTENTS_NODENAME = "contents";
-
     private XmlMountPointFactory xmlMountPointFactory;
 
     private String stateCode;
@@ -129,7 +128,7 @@ public class XmlMountPointFactoryHandler extends AbstractMountPointFactoryHandle
         Locale locale = LocaleContextHolder.getLocale();
         boolean validXmlPoint = validateXml(xmlMountPointFactory);
         if(!validXmlPoint) {
-            logger.error("Error saving mount point : " + xmlMountPointFactory.getName() + "with the root : " + xmlMountPointFactory.getRoot());
+            logger.error(String.format("Error saving mount point : %swith the root : %s", xmlMountPointFactory.getName(), xmlMountPointFactory.getRoot()));
             MessageBuilder messageBuilder = new MessageBuilder().error().defaultText(Messages.get(BUNDLE,"label.error",locale));
             messageContext.addMessage(messageBuilder.build());
             requestContext.getConversationScope().put("adminURL", getAdminURL(requestContext));
@@ -143,7 +142,7 @@ public class XmlMountPointFactoryHandler extends AbstractMountPointFactoryHandle
                 requestContext.getConversationScope().put("adminURL", getAdminURL(requestContext));
                 return true;
             } else {
-                logger.warn("Mount point availability problem : " + xmlMountPointFactory.getName() + "with the root : " + xmlMountPointFactory.getRoot() + "the mount point is created but unmounted");
+                logger.warn(String.format("Mount point availability problem : %swith the root : %sthe mount point is created but unmounted", xmlMountPointFactory.getName(), xmlMountPointFactory.getRoot()));
                 stateCode = "WARNING";
                 messageKey = "label.error";
                 requestContext.getConversationScope().put("adminURL", getAdminURL(requestContext));
@@ -158,6 +157,7 @@ public class XmlMountPointFactoryHandler extends AbstractMountPointFactoryHandle
     }
 
     private boolean validateXml(XmlMountPointFactory xmlMountPointFactory) {
+        InputStream is = null;
         try {
             VFS.getManager().resolveFile(xmlMountPointFactory.getRoot());
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
@@ -166,13 +166,16 @@ public class XmlMountPointFactoryHandler extends AbstractMountPointFactoryHandle
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
             Document xmlFile = builder.parse(new InputSource(xmlMountPointFactory.getRoot()));
             SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Source schemaFile = new StreamSource(new File("./src/xml/XMLSchema.xsd"));
+            is = ServicesRegistry.getInstance().getJahiaTemplateManagerService().getTemplatePackageById("xml-externalprovider").getBundle().getResource("META-INF/xml/XMLSchema.xsd").openStream();
+            Source schemaFile = new StreamSource(is);
             Schema schema = factory.newSchema(schemaFile);
             Validator validator = schema.newValidator();
             validator.validate(new DOMSource(xmlFile));
         } catch (IOException | ParserConfigurationException | SAXException e) {
             logger.warn(String.format("XML mount point %s has validation problem %s", xmlMountPointFactory.getName(), e.getMessage()));
             return false;
+        } finally {
+            IOUtils.closeQuietly(is);
         }
         return true;
     }
@@ -185,5 +188,4 @@ public class XmlMountPointFactoryHandler extends AbstractMountPointFactoryHandle
         }
         return builder.toString();
     }
-
 }

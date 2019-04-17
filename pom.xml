@@ -112,7 +112,12 @@
             <artifactId>sqljdbc4</artifactId>
             <version>4.0.2206.100</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.eclipse.gemini.blueprint</groupId>
+            <artifactId>gemini-blueprint-core</artifactId>
+            <version>1.0.2.RELEASE</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
