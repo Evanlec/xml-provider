@@ -277,7 +277,7 @@ public class XmlDataSourceWritable implements ExternalDataSource, ExternalDataSo
         String[] idActivity = identifier.split("-");
         if (idActivity.length == 3) {
             try {
-                JSONArray activities = getCacheXMLActivities(true);
+                JSONArray activities = getCacheXMLActivities(false);
                 // Find the activity by its identifier
                 int numActivity = Integer.parseInt(idActivity[0]) - 1;
                 JSONObject activity = (JSONObject) activities.get(numActivity);
@@ -337,7 +337,7 @@ public class XmlDataSourceWritable implements ExternalDataSource, ExternalDataSo
         String nodeType = QueryHelper.getNodeType(query.getSource());
         if (NodeTypeRegistry.getInstance().getNodeType(JNT_XML_ACTIVITY).isNodeType(nodeType)) {
             try {
-                JSONArray activities = getCacheXMLActivities(true);
+                JSONArray activities = getCacheXMLActivities(false);
                 for (int i = 1; i <= activities.length(); i++) {
                     JSONObject activity = (JSONObject) activities.get(i - 1);
                     String path = "/" + XmlUtils.displayNumberTwoDigits(i) + "-" + ACTIVITY + "-" + activity.get(ID);
