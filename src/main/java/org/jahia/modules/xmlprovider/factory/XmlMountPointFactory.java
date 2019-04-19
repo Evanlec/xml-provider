@@ -43,7 +43,6 @@
  */
 package org.jahia.modules.xmlprovider.factory;
 
-import org.eclipse.gemini.blueprint.context.BundleContextAware;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.jahia.modules.external.admin.mount.AbstractMountPointFactory;
 import org.jahia.services.content.JCRNodeWrapper;
@@ -53,12 +52,11 @@ import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import java.io.Serializable;
 
-public class XmlMountPointFactory extends AbstractMountPointFactory implements Serializable, BundleContextAware {
+public class XmlMountPointFactory extends AbstractMountPointFactory implements Serializable {
     private static final long serialVersionUID = -41541258548484556L;
     public static final String XMLPATH_PROPERTY = "j:xmlPath";
     public static final String XMLMOUNTPOINT_NT = "jnt:xmlMountPoint";
     public static final String MOUNTPOINT_NT = "mountPoint";
-    private transient BundleContext bundleContext;
 
     @NotEmpty
     private String name;
@@ -116,14 +114,5 @@ public class XmlMountPointFactory extends AbstractMountPointFactory implements S
 
     public void setLocalPath(String localPath) {
         this.localPath = localPath;
-    }
-
-    @Override
-    public void setBundleContext(BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
-    }
-
-    public BundleContext getBundleContext() {
-        return bundleContext;
     }
 }

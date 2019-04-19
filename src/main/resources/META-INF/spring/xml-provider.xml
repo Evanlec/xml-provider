@@ -11,26 +11,13 @@
 
     <osgi:reference id="ExternalProviderInitializerService" interface="org.jahia.modules.external.ExternalProviderInitializerService"/>
 
+    <bean id="messageSource" class="org.jahia.utils.i18n.ModuleMessageSource"/>
+
     <!-- Xml Writable -->
-
-    <bean class="org.jahia.modules.external.ExternalContentStoreProvider" parent="AbstractJCRStoreProvider" scope="prototype">
-        <property name="key" value="XmlWritableProvider"/>
-        <property name="mountPoint" value="/mounts/xml-activities"/>
-        <property name="externalProviderInitializerService" ref="ExternalProviderInitializerService"/>
-        <property name="extendableTypes">
-            <list>
-                <value>jnt:contentFolder</value>
-                <value>jnt:xmlActivity</value>
-            </list>
-        </property>
-    </bean>
-
     <bean name="xmlProviderFactory" class="org.jahia.modules.xmlprovider.XmlProviderFactory"/>
 
     <bean class="org.jahia.modules.xmlprovider.XmlDataSourceWritable" scope="prototype">
         <property name="cacheProvider" ref="ehCacheProvider"/>
     </bean>
-
-    <bean id="xmlMountPointFactory" class="org.jahia.modules.xmlprovider.factory.XmlMountPointFactory"/>
 
 </beans>

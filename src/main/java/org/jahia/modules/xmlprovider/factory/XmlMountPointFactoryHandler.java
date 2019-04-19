@@ -49,10 +49,12 @@ import org.jahia.registries.ServicesRegistry;
 import org.jahia.services.content.JCRCallback;
 import org.jahia.services.content.JCRSessionWrapper;
 import org.jahia.services.content.JCRTemplate;
+import org.jahia.services.templates.JahiaTemplateManagerService;
 import org.jahia.utils.i18n.Messages;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.binding.message.MessageBuilder;
 import org.springframework.binding.message.MessageContext;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -81,17 +83,23 @@ import java.io.Serializable;
 import java.util.Locale;
 
 
-public class XmlMountPointFactoryHandler extends AbstractMountPointFactoryHandler implements Serializable {
+public class XmlMountPointFactoryHandler extends AbstractMountPointFactoryHandler<XmlMountPointFactory> implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(XmlMountPointFactoryHandler.class);
 
     private static final long serialVersionUID = 41541258548484556L;
 
     private static final String BUNDLE = "resources.xml-externalprovider";
     private static final String CONTENTS_NODENAME = "contents";
+    private static final String XML_EXTERNALPROVIDER = "xml-externalprovider";
+    private static final String XML_SCHEMA_PATH = "META-INF/xml/XMLSchema.xsd";
+    private static final String JNT_CONTENT_FOLDER = "jnt:contentFolder";
     private XmlMountPointFactory xmlMountPointFactory;
 
     private String stateCode;
     private String messageKey;
+
+    @Autowired
+    private transient JahiaTemplateManagerService templateManagerService;
 
     public void init(RequestContext requestContext) {
         xmlMountPointFactory = new XmlMountPointFactory();
@@ -109,7 +117,7 @@ public class XmlMountPointFactoryHandler extends AbstractMountPointFactoryHandle
             JSONArray folders = JCRTemplate.getInstance().doExecuteWithSystemSession(new JCRCallback<JSONArray>() {
                 @Override
                 public JSONArray doInJCR(JCRSessionWrapper session) throws RepositoryException {
-                    return getSiteFolders(session.getWorkspace(),CONTENTS_NODENAME);
+                    return getSiteFolders(session.getWorkspace(),CONTENTS_NODENAME, JNT_CONTENT_FOLDER);
                 }
             });
 
@@ -129,7 +137,7 @@ public class XmlMountPointFactoryHandler extends AbstractMountPointFactoryHandle
         boolean validXmlPoint = validateXml(xmlMountPointFactory);
         if(!validXmlPoint) {
             logger.error(String.format("Error saving mount point : %swith the root : %s", xmlMountPointFactory.getName(), xmlMountPointFactory.getRoot()));
-            MessageBuilder messageBuilder = new MessageBuilder().error().defaultText(Messages.get(BUNDLE,"label.error",locale));
+            MessageBuilder messageBuilder = new MessageBuilder().error().defaultText(Messages.get(BUNDLE,"xmlProvider.error.file",locale));
             messageContext.addMessage(messageBuilder.build());
             requestContext.getConversationScope().put("adminURL", getAdminURL(requestContext));
             return false;
@@ -166,7 +174,7 @@ public class XmlMountPointFactoryHandler extends AbstractMountPointFactoryHandle
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
             Document xmlFile = builder.parse(new InputSource(xmlMountPointFactory.getRoot()));
             SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            is = ServicesRegistry.getInstance().getJahiaTemplateManagerService().getTemplatePackageById("xml-externalprovider").getBundle().getResource("META-INF/xml/XMLSchema.xsd").openStream();
+            is = templateManagerService.getTemplatePackageById(XML_EXTERNALPROVIDER).getBundle().getResource(XML_SCHEMA_PATH).openStream();
             Source schemaFile = new StreamSource(is);
             Schema schema = factory.newSchema(schemaFile);
             Validator validator = schema.newValidator();
