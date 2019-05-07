@@ -5,8 +5,7 @@ This module allow you to create a mount point in your Digital Factory in order t
 Use this module as a tutorial or guide to do your own implementation.
 
 ### MINIMAL REQUIREMENTS
-* Digital Factory 7.1.0.1
-* DF Module - External data provider V3.2.2 
+* (Digital Factory 7.2.3.1 + DF Module - External data provider V3.1.9) OR (Digital Factory 7.3.1.0 + DF Module - External data provider V3.2.2)  
 * **Important:** to use this module you must create yourself a xml file in your instance.  
 You will find the example file to use [here](https://github.com/Jahia/xml-provider/blob/master/src/main/resources/META-INF/xml/edp-activity.xml)
 
