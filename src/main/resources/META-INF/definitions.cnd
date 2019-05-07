@@ -11,7 +11,7 @@
 [jnt:xmlActivities] > jnt:content, jmix:structuredContent
 
 [jnt:xmlActivity] > jnt:content, jmix:structuredContent
- - id (long)
+ - id (long) mandatory
  - name (string)
  - distance (double)
  - type (string)

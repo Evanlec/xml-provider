@@ -16,8 +16,6 @@
     <!-- Xml Writable -->
     <bean name="xmlProviderFactory" class="org.jahia.modules.xmlprovider.XmlProviderFactory"/>
 
-    <bean class="org.jahia.modules.xmlprovider.XmlDataSourceWritable" scope="prototype">
-        <property name="cacheProvider" ref="ehCacheProvider"/>
-    </bean>
+    <bean class="org.jahia.modules.xmlprovider.XmlDataSourceWritable" scope="prototype"/>
 
 </beans>

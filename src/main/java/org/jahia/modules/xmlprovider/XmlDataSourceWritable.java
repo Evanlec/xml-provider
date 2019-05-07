@@ -44,14 +44,12 @@
 package org.jahia.modules.xmlprovider;
 
 import com.google.common.collect.Sets;
-import net.sf.ehcache.Ehcache;
 import org.apache.commons.lang.StringUtils;
 import org.jahia.modules.external.ExternalData;
 import org.jahia.modules.external.ExternalDataSource;
 import org.jahia.modules.external.ExternalQuery;
 import org.jahia.modules.external.query.QueryHelper;
 import org.jahia.modules.xmlprovider.utils.XmlUtils;
-import org.jahia.services.cache.ehcache.EhCacheProvider;
 import org.jahia.services.content.nodetypes.NodeTypeRegistry;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -85,13 +83,7 @@ public class XmlDataSourceWritable implements ExternalDataSource, ExternalDataSo
     private static final Logger LOGGER = LoggerFactory.getLogger(org.jahia.modules.xmlprovider.XmlDataSourceWritable.class);
 
     // The XML file
-    public static String XML_FILE_PATH = "";
-
-    // Cache
-    private EhCacheProvider ehCacheProvider;
-    private Ehcache cache;
-    private static final String CACHE_XML_ACTVITIES  = "cacheXmlActivities";
-
+    private String xmlFilePath = "";
 
     // Node types
     private static final String JNT_XML_ACTIVITY    = "jnt:xmlActivity";
@@ -120,28 +112,12 @@ public class XmlDataSourceWritable implements ExternalDataSource, ExternalDataSo
     public XmlDataSourceWritable(){}
 
     // GETTERS AND SETTERS
-    public void setCacheProvider(EhCacheProvider ehCacheProvider) {
-        this.ehCacheProvider = ehCacheProvider;
-    }
-
-    public EhCacheProvider getEhCacheProvider() {
-        return ehCacheProvider;
-    }
-
-    public Ehcache getCache() {
-        return cache;
-    }
-
-    public void setCache(Ehcache cache) {
-        this.cache = cache;
-    }
-
     public String getXmlFilePath() {
-        return XML_FILE_PATH;
+        return xmlFilePath;
     }
 
     public void setXmlFilePath(String xmlFilePath) {
-        XmlDataSourceWritable.XML_FILE_PATH = xmlFilePath;
+        this.xmlFilePath = xmlFilePath;
     }
 
     // METHODS
@@ -157,14 +133,14 @@ public class XmlDataSourceWritable implements ExternalDataSource, ExternalDataSo
      */
     private JSONArray queryXML() throws RepositoryException {
         try {
-            if(StringUtils.isEmpty(XML_FILE_PATH))
+            if(StringUtils.isEmpty(xmlFilePath))
                 return  new JSONArray("[]");
             else
-                logger.info("queryXML(), parsing the file:" + XML_FILE_PATH);
+                logger.info("queryXML(), parsing the file:" + xmlFilePath);
 
 
             StringBuilder jsonData = new StringBuilder();
-            File xmlFile = new File(XML_FILE_PATH);
+            File xmlFile = new File(xmlFilePath);
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(xmlFile);
@@ -192,46 +168,23 @@ public class XmlDataSourceWritable implements ExternalDataSource, ExternalDataSo
                 }
             }
 
-            JSONArray jsonArray = new JSONArray("[" + jsonData.toString() + "]");
-            cache.put(new net.sf.ehcache.Element(CACHE_XML_ACTVITIES, jsonArray));
-            return jsonArray;
+            return new JSONArray("[" + jsonData.toString() + "]");
         }
          catch (Exception e) {
             throw new RepositoryException(e);
         }
     }
 
-    /**
-     * get all the content in json object by id.
-     *
-     * @param id
-     * @return
-     * @throws RepositoryException
-     */
-    private JSONObject queryXMLJSONObject(int id) throws RepositoryException {
-        try {
-            return (JSONObject) getCacheXMLActivities(true).get(id);
-        } catch (Exception e) {
-            throw new RepositoryException(e);
+    private JSONObject getActivity(String id, JSONArray activities) throws JSONException {
+        if (StringUtils.isNotBlank(id)) {
+            for (int i = 0; i < activities.length(); i++) {
+                JSONObject activity = activities.getJSONObject(i);
+                if (id.equals(activity.getString(ID))) {
+                    return activity;
+                }
+            }
         }
-    }
-
-    /**
-     * get the data from the cache.
-     *
-     * @param deleteCache
-     * @return
-     * @throws RepositoryException
-     */
-    private JSONArray getCacheXMLActivities(boolean deleteCache) throws RepositoryException {
-        JSONArray activities;
-        if (cache.get(CACHE_XML_ACTVITIES) != null && !deleteCache) {
-            activities = (JSONArray) cache.get(CACHE_XML_ACTVITIES).getObjectValue();
-        } else {
-            LOGGER.info("Refresh the activities");
-            activities = queryXML();
-        }
-        return activities;
+        return null;
     }
 
 
@@ -249,7 +202,7 @@ public class XmlDataSourceWritable implements ExternalDataSource, ExternalDataSo
         List<String> r = new ArrayList<>();
         if (path.equals("/")) {
             try {
-                JSONArray activities = getCacheXMLActivities(true);
+                JSONArray activities = queryXML();
                 for (int i = 1; i <= activities.length(); i++) {
                     JSONObject activity = (JSONObject) activities.get(i - 1);
                     r.add(XmlUtils.displayNumberTwoDigits(i) + "-" + ACTIVITY + "-" + activity.get(ID));
@@ -277,10 +230,7 @@ public class XmlDataSourceWritable implements ExternalDataSource, ExternalDataSo
         String[] idActivity = identifier.split("-");
         if (idActivity.length == 3) {
             try {
-                JSONArray activities = getCacheXMLActivities(false);
-                // Find the activity by its identifier
-                int numActivity = Integer.parseInt(idActivity[0]) - 1;
-                JSONObject activity = (JSONObject) activities.get(numActivity);
+                JSONObject activity = getActivity(idActivity[2], queryXML());
                 // Add some properties
                 properties.put(ID,          new String[]{ activity.getString(ID)   });
                 properties.put(NAME,        new String[]{ activity.getString(NAME) });
@@ -289,8 +239,7 @@ public class XmlDataSourceWritable implements ExternalDataSource, ExternalDataSo
                 properties.put(MOVING_TIME, new String[]{ activity.getString(MOVING_TIME) });
                 properties.put(START_DATE,  new String[]{ activity.getString(START_DATE)   });
                 // Return the external data (a node)
-                ExternalData data = new ExternalData(identifier, "/" + identifier, JNT_XML_ACTIVITY, properties);
-                return data;
+                return new ExternalData(identifier, "/" + identifier, JNT_XML_ACTIVITY, properties);
             } catch (Exception e) {
                 throw new ItemNotFoundException(identifier);
             }
@@ -337,7 +286,7 @@ public class XmlDataSourceWritable implements ExternalDataSource, ExternalDataSo
         String nodeType = QueryHelper.getNodeType(query.getSource());
         if (NodeTypeRegistry.getInstance().getNodeType(JNT_XML_ACTIVITY).isNodeType(nodeType)) {
             try {
-                JSONArray activities = getCacheXMLActivities(false);
+                JSONArray activities = queryXML();
                 for (int i = 1; i <= activities.length(); i++) {
                     JSONObject activity = (JSONObject) activities.get(i - 1);
                     String path = "/" + XmlUtils.displayNumberTwoDigits(i) + "-" + ACTIVITY + "-" + activity.get(ID);
@@ -363,7 +312,7 @@ public class XmlDataSourceWritable implements ExternalDataSource, ExternalDataSo
         try{
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-            Document doc = docBuilder.parse(XML_FILE_PATH);
+            Document doc = docBuilder.parse(xmlFilePath);
 
             Map<String, String[]>  activityProps = data.getProperties();
             String activityId = activityProps.containsKey(ID) ? activityProps.get(ID)[0] : "";
@@ -424,7 +373,7 @@ public class XmlDataSourceWritable implements ExternalDataSource, ExternalDataSo
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(new File(XML_FILE_PATH));
+            StreamResult result = new StreamResult(new File(xmlFilePath));
             transformer.transform(source, result);
 
             LOGGER.info("saveItem(), Done......");
